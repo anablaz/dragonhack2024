@@ -7,6 +7,7 @@ from shapely.geometry import box
 import io
 import os
 from argparse import ArgumentParser
+import numpy as np
 
 parser = ArgumentParser("Mask generation")
 parser.add_argument(
@@ -68,6 +69,8 @@ for img_path in dataset_path.glob("*.tif"):
     # save mask
     buf.seek(0)
     mask = Image.open(buf)
+    if (np.array(mask) == 0).mean() < 0.05:
+        continue
 
     #mask.resize((img.width, img.height))
     mask.save(out_path / f"{img_path.stem}.png")
