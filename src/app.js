@@ -1,8 +1,5 @@
 import { Loader } from '@googlemaps/js-api-loader';
-
-const apiOptions = {
-  apiKey: "AIzaSyANrwVDTl6-phGCaDzDAHU7gpBesA7tpgw"
-}
+const apiKey = require('./keys.json').apiKey;
 
 const styleOptions = {
   strokeColor: 'green',
@@ -12,11 +9,17 @@ const styleOptions = {
   fillOpacity: 0.3,
 };
 
-const loader = new Loader(apiOptions);
+const loader = new Loader({
+  apiKey: apiKey,
+  version: 'weekly',
+  libraries: ['places']
+});
 
 loader.load().then(() => {
   console.log('Maps JS API loaded');
   const map = displayMap();
+  map.data.loadGeoJson("test.json");
+  
 });
 
 function displayMap() {
