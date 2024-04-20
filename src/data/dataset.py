@@ -53,4 +53,4 @@ class RiverDebrisDataset(Dataset):
     
         # cls labels are 0 if no debris mask in patch, else 1
         labels = debris_mask_tiles.reshape((debris_mask_tiles.shape[0], -1)).any(dim=1)
-        return mix_img_tiles, debris_mask_tiles, labels
+        return mix_img_tiles, debris_mask_tiles.float(), labels.float()

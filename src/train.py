@@ -27,7 +27,7 @@ if __name__ == "__main__":
         args.img_root, args.mask_root, (2048, 2048), (256, 256)
     )
     trainer = L.Trainer(
-        #logger=WandbLogger(f"Deeplearning-HW2-Seg-{type(model.model).__name__}", project="DL-HW2-Seg"),
+        logger=WandbLogger(f"SegCls", project="Dragonhack"),
         max_epochs=40,
         callbacks=[
             #ModelCheckpoint(monitor="train_iou", mode="max")
