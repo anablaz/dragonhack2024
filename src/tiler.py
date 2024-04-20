@@ -4,6 +4,15 @@ from torchvision.transforms import Resize
 
 
 class Tiler:
+    """
+    Tiler class to split the image into smaller tiles
+
+    Args:
+        in_size (tuple[int, int]): input image size
+        tile_size (tuple[int, int]): tile size
+
+    """
+
     def __init__(self, in_size: tuple[int, int], tile_size: tuple[int, int]):
         self.tile_count = []
         for in_dim, tile_dim in zip(in_size, tile_size):
@@ -16,6 +25,15 @@ class Tiler:
         self.unfolder = nn.Unfold(kernel_size=tile_size, stride=tile_size)
 
     def __call__(self, imgs: torch.Tensor):
+        """
+        Tile the passed images into specified tiles.
+
+        Args:
+            imgs (torch.Tensor): input images of shape [B, C, H, W]
+
+        Returns:
+            tiled image in shape: [b, t_dim_h, t_dim_w, C, t_h, t_w]
+        """
         assert len(imgs.shape) == 4, "Tiler only supports batched input"
 
         b = imgs.shape[0]
