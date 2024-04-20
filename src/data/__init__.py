@@ -1,1 +1,1 @@
-from .datamodule import SegmentationDataModule
+from .datamodule import RiverDebrisDataModule
