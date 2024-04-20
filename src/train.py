@@ -4,16 +4,16 @@ from pathlib import Path
 import lightning as L
 from lightning.pytorch.loggers import WandbLogger
 from lightning.pytorch.callbacks import ModelCheckpoint
-from models import SegmentationModel
-from data import SegmentationDataModule
-
-num_classes = 13
+from models import RiverDebrisModel
+from data import RiverDebrisDataModule
 
 if __name__ == "__main__":
     parser = ArgumentParser("seg")
     parser.add_argument(
-        "--root", type=Path, required=True,
-        help="Path to root dir of the seg dataset."
+        "--img_root", type=Path, help="Path to dir containing images."
+    )
+    parser.add_argument(
+        "--mask_root", type=Path, help="Path to dir containing masks."
     )
     parser.add_argument(
         "--seed", type=int, default=1337,
@@ -22,13 +22,15 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     L.seed_everything(args.seed)
-    model = SegmentationModel(lr=1e-4)
-    datamodule = SegmentationDataModule(args.root, batch_size=4)
+    model = RiverDebrisModel(lr=1e-4)
+    datamodule = RiverDebrisDataModule(
+        args.img_root, args.mask_root, (2048, 2048), (256, 256)
+    )
     trainer = L.Trainer(
-        logger=WandbLogger(f"Deeplearning-HW2-Seg-{type(model.model).__name__}", project="DL-HW2-Seg"),
+        #logger=WandbLogger(f"Deeplearning-HW2-Seg-{type(model.model).__name__}", project="DL-HW2-Seg"),
         max_epochs=40,
         callbacks=[
-            ModelCheckpoint(monitor="val_iou", mode="max")
+            #ModelCheckpoint(monitor="train_iou", mode="max")
         ]
     )
     trainer.fit(model, datamodule)

@@ -1,6 +1,6 @@
 import torch
 from torch import nn
-
+from torchvision.models import resnet18
 
 class UNetBlock(nn.Sequential):
 
@@ -31,3 +31,18 @@ class UNet(nn.Module):
             if self.skip: x = torch.cat((skip, x), dim=-3)
             x = block(x)
         return self.conv_out(x)
+    
+class SegClsNet(nn.Module):
+
+    def __init__(self, num_seg_classes, num_cls_classes):
+        super().__init__()
+        self.seg = UNet(num_seg_classes)
+        self.cls = nn.Sequential(
+            nn.Conv2d(num_seg_classes+3, 3, 1), 
+            resnet18(num_classes=num_cls_classes)
+        )
+
+    def forward(self, x):
+        seg = self.seg(x)
+        cls = self.cls(torch.cat([x, seg], dim=1))
+        return seg, cls

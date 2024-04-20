@@ -1,1 +1,1 @@
-from .module import SegmentationModel
+from .module import RiverDebrisModel
