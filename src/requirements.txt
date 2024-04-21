@@ -1,0 +1,4 @@
+tifffile
+pyproj
+torch
+torchvision
