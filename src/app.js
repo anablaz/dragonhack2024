@@ -74,21 +74,7 @@ function fetchMarkers() {
   return markers;
 }
 
-loader.load().then(() => {
-  console.log('Maps JS API loaded');
-  const map = displayMap();
-  map.data.loadGeoJson("test.json");
-  map.data.addListener('click', function(event) {
-    const position = event.latLng;
-    const content = "<img src='.data/test_img.png' width='200px' height='200px'>";
-    const infoWindow = new google.maps.InfoWindow({
-      position: position,
-      content: content
-    });
-    infoWindow.open(map);
-  });
-  const markers = fetchMarkers();
-
+function populate_list(map, markers) {
   const marker_list = document.getElementById('marker_list');
   markers.forEach(marker => {
     const listItem = document.createElement('a');
@@ -111,7 +97,69 @@ loader.load().then(() => {
       map.setCenter(coordinates);
     });
   });
+}
 
+function add_markers(map, markers) {
+  markers.forEach(marker_data => {
+    const marker = new google.maps.Marker({
+      position: new google.maps.LatLng(marker_data.geometry.coordinates[1], marker_data.geometry.coordinates[0]),
+      map: map,
+      icon: getMarkerIcon(marker_data.properties.severity)
+    });
+
+    function getMarkerIcon(severity) {
+      let iconColor;
+      switch (severity) {
+        case 1:
+          iconColor = 'yellow';
+          break;
+        case 2:
+          iconColor = 'orange';
+          break;
+        case 3:
+          iconColor = 'red';
+          break;
+        default:
+          iconColor = 'green';
+          break;
+      }
+      return {
+        path: google.maps.SymbolPath.CIRCLE,
+        fillColor: iconColor,
+        fillOpacity: 0.7,
+        strokeWeight: 0,
+        scale: 10
+      };
+    }
+
+    marker.addListener('click', function() {
+      map.setZoom(18);
+      map.setCenter(marker.getPosition());
+      const infoWindow = new google.maps.InfoWindow({
+        content: marker_data.properties.description
+      });
+      infoWindow.open(map, marker);
+    });
+  })
+}
+
+loader.load().then(() => {
+  console.log('Maps JS API loaded');
+  const map = displayMap();
+  map.data.loadGeoJson("test.json");
+  map.data.addListener('click', function(event) {
+    const position = event.latLng;
+    const content = "<img src='.data/test_img.png' width='200px' height='200px'>";
+    const infoWindow = new google.maps.InfoWindow({
+      position: position,
+      content: content
+    });
+    infoWindow.open(map);
+  });
+  const markers = fetchMarkers();
+
+  populate_list(map, markers);
+  add_markers(map, markers);
 });
 
 function displayMap() {
