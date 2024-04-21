@@ -28,7 +28,7 @@
         #map {
             height: calc(100vh - 40px); /* Adjust for header height */
             width: 100%;
-            margin-top: 40px; /* Adjust for header height */
+            margin-top: 60px; /* Adjust for header height */
         }
         iframe {
             border: 0;
@@ -37,11 +37,20 @@
         }
     </style>
     <script src="app.js"></script>
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css"> 
 </head>
 <body>
     <div id="header">
         <h1 style="margin: 0;">Flood = bad :(</h1>
     </div>
+    <div class="w3-sidebar w3-bar-block" style="width:20%;right:0">
+        <h5 class="w3-bar-item">Menu</h5>
+        <div id="marker_list">
+            <!-- <a href="#" class="w3-bar-item w3-button w3-red">Link 1</a>
+            <a href="#" class="w3-bar-item w3-button w3-green">Link 2</a>
+            <a href="#" class="w3-bar-item w3-button w3-yellow">Link 3</a> -->
+        </div>
+      </div>
     <div id="map"></div>
 </body>
 </html>
