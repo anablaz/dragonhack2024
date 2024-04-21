@@ -14,6 +14,9 @@ from flask import Flask, jsonify, request
 from notifier import ObstacleNotifier
 from retry_requests import retry
 from secret import TOKEN
+from models import RiverDebrisModel
+
+
 
 CHANNEL_ID = 1046387247336923176
 
