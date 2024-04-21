@@ -13,10 +13,7 @@ from discord import app_commands
 from flask import Flask, jsonify, request
 from notifier import ObstacleNotifier
 from retry_requests import retry
-from secret import TOKEN
-
-CHANNEL_ID = 1046387247336923176
-
+from secret import CHANNEL_ID, TOKEN
 
 intents = discord.Intents.default()
 
@@ -210,6 +207,11 @@ async def run_classifier(model: torch.nn.Module, dataloader: torch.utils.data.Da
 @client.event
 async def on_ready():
     print('We have logged in as {0.user}'.format(client))
+    await client.notify_about_obstacle({
+        'location': (45.0, 45.0),
+        'precipitation_ratio': 1.5,
+        'water_flow_ratio': 1.2
+    }, client.get_channel(CHANNEL_ID))
 
 
 async def command_error(interaction, error):
