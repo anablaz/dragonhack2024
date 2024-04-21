@@ -1,16 +1,14 @@
-from secret import TOKEN
-from notifier import ObstacleNotifier
-
-import discord
-from discord import app_commands
-import openmeteo_requests
-
-import requests_cache
-import pandas as pd
-from retry_requests import retry
-import numpy as np
 from collections import defaultdict
 
+import discord
+import numpy as np
+import openmeteo_requests
+import pandas as pd
+import requests_cache
+from discord import app_commands
+from notifier import ObstacleNotifier
+from retry_requests import retry
+from secret import TOKEN
 
 CHANNEL_ID = 1046387247336923176
 
