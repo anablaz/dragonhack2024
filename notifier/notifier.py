@@ -22,7 +22,7 @@ class ObstacleNotifier(discord.Client):
         self.tree.copy_global_to(guild=MY_GUILD)
         await self.tree.sync(guild=MY_GUILD)
 
-    async def notify_about_obstacle(self, info: dict, channel: discord.abc.Messageable, mention_everyone=False):
+    async def notify_about_obstacle(self, info: dict, channel: discord.abc.Messageable, mention_everyone=False, prefix=''):
         """Notifies the users about the obstacle on the water surface.
 
         Args:
@@ -35,7 +35,7 @@ class ObstacleNotifier(discord.Client):
             tuple: Tuple of (bool, str) where the first element is True if the notification was successful and False otherwise, and the second element is the response message
         """
         print(f'Notifying about obstacle at {info["location"]} in {channel}')
-        message_to_send = f'Obstacle detected at {info["location"]}!\nPrecipitation for next week vs. last month: {info["precipitation_ratio"]:.2f}.\nWater flow conditions for next week vs. last month: {info["water_flow_ratio"]:.2f}.'
+        message_to_send = f'{prefix} Obstacle detected at {info["location"]}!\nPrecipitation for next week vs. last month: {info["precipitation_ratio"]:.2f}.\nWater flow conditions for next week vs. last month: {info["water_flow_ratio"]:.2f}.'.strip()
         if mention_everyone:
             message_to_send = '@everyone ' + message_to_send
 
