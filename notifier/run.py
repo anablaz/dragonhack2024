@@ -9,6 +9,7 @@ from discord import app_commands
 from notifier import ObstacleNotifier
 from retry_requests import retry
 from secret import TOKEN
+import geopandas as gpd
 
 CHANNEL_ID = 1046387247336923176
 
@@ -96,16 +97,31 @@ async def evaluate_severity(lat, lon, size):
     Returns:
         str: Severity of the obstacle
     """
+    score = 0
     if size < 5:
-        return 'low'
+        score += 1
     elif size < 10:
-        # get weather data
-        weather_data = await run_weather([lat], [lon])
-        rain_ratio = weather_data[0]['rain_ratio']
-        flow_ratio = weather_data[0]['flow_ratio']
-        if rain_ratio <= 1.5 or flow_ratio <= 1.2:
-            return 'medium'
-    return 'high'
+        score += 3
+    else:
+        score += 5
+    # get weather data
+    weather_data = await run_weather([lat], [lon])
+    rain_ratio = weather_data[0]['rain_ratio']
+    flow_ratio = weather_data[0]['flow_ratio']
+    # read endangered locations
+    endangered_areas = gpd.read_file('endangered_areas')
+    is_endangered = endangered_areas.contains(gpd.points_from_xy([lon], [lat])[0]).any()
+    if is_endangered:
+        score += 5
+    if rain_ratio > 1.5:
+        score += 3
+    if flow_ratio > 1.2:
+        score += 5
+    if score <= 4:
+        return 1
+    elif score <= 7:
+        return 2
+    return 3
 
 
 async def run_preventive_weather_check():
