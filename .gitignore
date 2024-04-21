@@ -1,3 +1,8 @@
 secret.py
 .pyc
 notifier/.cache.sqlite
+__pycache__/
+/data/
+.vscode/
+packarije.*
+*.ckpt

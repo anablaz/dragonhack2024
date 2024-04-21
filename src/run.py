@@ -14,6 +14,13 @@ from flask import Flask, jsonify, request
 from notifier import ObstacleNotifier
 from retry_requests import retry
 from secret import TOKEN
+from models import RiverDebrisModel
+from data.dataset import RiverDebrisPredDataset
+from torch.utils.data import DataLoader
+import lightning as L
+from PIL import Image
+import torchvision
+
 
 CHANNEL_ID = 1046387247336923176
 
@@ -161,15 +168,14 @@ async def run_preventive_weather_check():
     return danger_data
 
 
-async def run_classifier(model: torch.nn.Module, dataloader: torch.utils.data.DataLoader):
+async def run_classifier():
     """Runs the classifier to find obstacles, then check severity with weather data.
 
     Returns:
         dict: Dictionary with the classifier data in GeoJSON format
     """
-    # TODO run our classifier here
     classifier_data = [{
-        'location': (45.0, 45.0),
+        'location': (14.602211633, 46.149839240),
         'size': 6.0,
     }]
     obstacles_data = {
@@ -232,13 +238,26 @@ async def get_obstacles():
     if request.method == 'GET':
         return jsonify(await run_preventive_weather_check())
     elif request.method == 'POST':
+        model = RiverDebrisModel.load_from_checkpoint('models/last.ckpt')
+
+        return jsonify(await run_classifier())
         photo = b64decode(request.get_json())
         photo = cv2.imdecode(np.frombuffer(photo, np.uint8), cv2.IMREAD_COLOR)
-        # TODO replace with our dataloader
-        dataloader = torch.utils.data.DataLoader(photo)
-        model = torch.nn.Module()
-        # load from checkpoint
-        model.load_state_dict(torch.load('model.pth'))
+        photo = cv2.imread('./data/photos/photo.png')
+        photo = cv2.cvtColor(photo, cv2.COLOR_BGR2RGB)
+        photo = torch.tensor(photo).permute(2, 0, 1).unsqueeze(0).float() / 255
+        photo = torchvision.transforms.Resize((256, 256))(photo)
+        mask = cv2.imread('./data/masks/photo.png', cv2.IMREAD_GRAYSCALE)
+        mask = torch.tensor(mask).unsqueeze(0).unsqueeze(0).float() / 255
+        mask = 1 - mask
+        mask = torchvision.transforms.Resize((256, 256))(mask)
+
+        with torch.no_grad():
+            pred = model.predict_step((photo, mask), 0)
+        
+
+        cv2.imshow('Segmentation', pred[0].squeeze().numpy())
+        cv2.waitKey(0)
         return jsonify(await run_classifier(model, dataloader))
 
 
