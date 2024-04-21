@@ -30,7 +30,7 @@ if __name__ == "__main__":
         logger=WandbLogger(f"SegCls", project="Dragonhack"),
         max_epochs=40,
         callbacks=[
-            #ModelCheckpoint(monitor="train_iou", mode="max")
+            ModelCheckpoint(monitor="train_loss", mode="min", verbose=True, save_last=True, save_top_k=3)
         ]
     )
     trainer.fit(model, datamodule)

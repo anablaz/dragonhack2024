@@ -3,11 +3,10 @@
 #SBATCH --output=output.out
 #SBATCH --nodes=1
 #SBATCH --partition=gpu
-#SBATCH --reservation=fri
 #SBATCH --gpus=1
 #SBATCH --mem-per-gpu=32G
 #SBATCH --cpus-per-task=16
-#SBATCH --time=12:00:00
+#SBATCH --time=4:00:00
 
 srun nvidia-smi
 srun python src/train.py \
