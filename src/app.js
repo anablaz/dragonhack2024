@@ -40,7 +40,7 @@ function fetchMarkers() {
         coordinates: [14.860664, 46.208138]
       },
       properties: {
-        name: 'Marker 1',
+        name: 'Stuck log',
         description: 'This is marker 1',
         severity: 1
       }
@@ -52,7 +52,7 @@ function fetchMarkers() {
         coordinates: [14.862345, 46.209876]
       },
       properties: {
-        name: 'Marker 2',
+        name: 'Trash at the river bank',
         description: 'This is marker 2',
         severity: 2
       }
@@ -64,7 +64,7 @@ function fetchMarkers() {
         coordinates: [14.865432, 46.207654]
       },
       properties: {
-        name: 'Marker 3',
+        name: 'Branch build-up',
         description: 'This is marker 3',
         severity: 3
       }
