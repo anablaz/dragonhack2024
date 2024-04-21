@@ -1,5 +1,5 @@
 import { Loader } from '@googlemaps/js-api-loader';
-const apiKey = require('./keys.json').apiKey;
+const apiKey = require('../keys.json').apiKey;
 
 const styleOptions = {
   strokeColor: 'green',
