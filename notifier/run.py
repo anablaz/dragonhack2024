@@ -1,15 +1,19 @@
-from collections import defaultdict
+from base64 import b64decode
+from multiprocessing import Process
 
+import cv2
 import discord
+import geopandas as gpd
 import numpy as np
 import openmeteo_requests
 import pandas as pd
 import requests_cache
+import torch
 from discord import app_commands
+from flask import Flask, jsonify, request
 from notifier import ObstacleNotifier
 from retry_requests import retry
 from secret import TOKEN
-import geopandas as gpd
 
 CHANNEL_ID = 1046387247336923176
 
@@ -110,7 +114,8 @@ async def evaluate_severity(lat, lon, size):
     flow_ratio = weather_data[0]['flow_ratio']
     # read endangered locations
     endangered_areas = gpd.read_file('endangered_areas')
-    is_endangered = endangered_areas.contains(gpd.points_from_xy([lon], [lat])[0]).any()
+    is_endangered = endangered_areas.contains(
+        gpd.points_from_xy([lon], [lat])[0]).any()
     if is_endangered:
         score += 5
     if rain_ratio > 1.5:
@@ -145,18 +150,18 @@ async def run_preventive_weather_check():
                 'type': 'Feature',
                 'geometry': {
                     'type': 'Point',
-                    'coordinates': [data['lon'], data['lat']]
+                    'coordinates': [float(data['lon']), float(data['lat'])]
                 },
                 'properties': {
                     'name': river_name,
-                    'rain_ratio': data['rain_ratio'],
-                    'flow_ratio': data['flow_ratio']
+                    'rain_ratio': float(data['rain_ratio']),
+                    'flow_ratio': float(data['flow_ratio'])
                 }
             })
     return danger_data
 
 
-async def run_classifier():
+async def run_classifier(model: torch.nn.Module, dataloader: torch.utils.data.DataLoader):
     """Runs the classifier to find obstacles, then check severity with weather data.
 
     Returns:
@@ -205,8 +210,6 @@ async def run_classifier():
 @client.event
 async def on_ready():
     print('We have logged in as {0.user}'.format(client))
-    weather_data = await run_preventive_weather_check()
-    obstacle_data = await run_classifier()
 
 
 async def command_error(interaction, error):
@@ -216,4 +219,35 @@ async def command_error(interaction, error):
     else:
         await interaction.response.send_message(f'Error: {error}', ephemeral=True)
 
-client.run(TOKEN)
+
+def run_discord_bot():
+    client.run(TOKEN)
+
+
+app = Flask(__name__)
+
+
+@app.route('/obstacles', methods=['GET', 'POST'])
+async def get_obstacles():
+    if request.method == 'GET':
+        return jsonify(await run_preventive_weather_check())
+    elif request.method == 'POST':
+        photo = b64decode(request.get_json())
+        photo = cv2.imdecode(np.frombuffer(photo, np.uint8), cv2.IMREAD_COLOR)
+        # TODO replace with our dataloader
+        dataloader = torch.utils.data.DataLoader(photo)
+        model = torch.nn.Module()
+        # load from checkpoint
+        model.load_state_dict(torch.load('model.pth'))
+        return jsonify(await run_classifier(model, dataloader))
+
+
+def run_flask_app():
+    app.run(port=5000)
+
+
+if __name__ == '__main__':
+    discord_process = Process(target=run_discord_bot)
+    flask_process = Process(target=run_flask_app)
+    discord_process.start()
+    flask_process.start()
