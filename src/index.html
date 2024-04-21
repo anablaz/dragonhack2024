@@ -16,8 +16,8 @@
             height: 100vh;
         }
         #header {
-            background-color: #333; /* Choose your desired background color */
-            color: #fff; /* Choose your desired text color */
+            background-color: #2f78b8; /* Choose your desired background color */
+            color: #ffffff; /* Choose your desired text color */
             padding: 10px;
             position: fixed;
             width: 100%;
@@ -35,16 +35,20 @@
             width: 100vw;
             height: 100vh;
         }
+        #add-image-button {
+            background-color: #2f78b8;
+            color: #ffffff,
+        }
     </style>
     <script src="app.js"></script>
     <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css"> 
 </head>
 <body>
     <div id="header">
-        <h1 style="margin: 0;">Flood = bad :(</h1>
+        <h1 style="margin: 0;">Flood == bad :(</h1>
     </div>
-    <div class="w3-sidebar w3-bar-block" style="width:20%;right:0">
-        <h5 class="w3-bar-item">Menu</h5>
+    <div class="w3-sidebar w3-bar-block" style="width:10%;right:0">
+        <h5 class="w3-bar-item" style="text-align: center">Potential blockages</h5>
         <div id="marker_list">
             <!-- <a href="#" class="w3-bar-item w3-button w3-red">Link 1</a>
             <a href="#" class="w3-bar-item w3-button w3-green">Link 2</a>
@@ -52,5 +56,11 @@
         </div>
       </div>
     <div id="map"></div>
+    <button id="add-image-button" style="position: fixed; bottom: 40px; left: 40px;">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+            <path d="M0 0h24v24H0z" fill="none"/>
+            <path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+    </button>
 </body>
 </html>

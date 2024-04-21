@@ -76,9 +76,13 @@ function fetchMarkers() {
 
 function populate_list(map, markers) {
   const marker_list = document.getElementById('marker_list');
+
+  markers = markers.sort((a, b) => b.properties.severity - a.properties.severity);
+
   markers.forEach(marker => {
     const listItem = document.createElement('a');
     listItem.classList.add('w3-bar-item', "w3-button");
+    listItem.style.textAlign = 'center';
     switch (marker.properties.severity) {
       case 1:
         listItem.classList.add('w3-yellow');
@@ -143,10 +147,15 @@ function add_markers(map, markers) {
   })
 }
 
+function add_header_grad() {
+  const header = document.getElementById('header');
+  header.style.background = 'linear-gradient(to right, #044387, #1897f2)';
+}
+
 loader.load().then(() => {
   console.log('Maps JS API loaded');
   const map = displayMap();
-  map.data.loadGeoJson("test.json");
+  // map.data.loadGeoJson("test.json");
   map.data.addListener('click', function(event) {
     const position = event.latLng;
     const content = "<img src='.data/test_img.png' width='200px' height='200px'>";
@@ -160,13 +169,15 @@ loader.load().then(() => {
 
   populate_list(map, markers);
   add_markers(map, markers);
+  add_header_grad();
 });
 
 function displayMap() {
   const mapOptions = {
     center: { lat: 46.208138, lng: 14.860664},
     zoom: 14,
-    mapId: '6c66ec448a80214c'
+    mapId: '6c66ec448a80214c',
+    mapTypeId: google.maps.MapTypeId.HYBRID
   };
   const mapDiv = document.getElementById('map');
   return new google.maps.Map(mapDiv, mapOptions);
