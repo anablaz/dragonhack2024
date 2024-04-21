@@ -5,7 +5,6 @@ import discord
 import pandas as pd
 from discord import app_commands
 
-
 MY_GUILD = discord.Object(id=1046387245982175262)
 
 
