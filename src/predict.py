@@ -21,8 +21,7 @@ if __name__ == "__main__":
     )
     args = parser.parse_args()
 
-    #model = RiverDebrisModel.load_from_checkpoint(args.checkpoint_path)
-    model = RiverDebrisModel(1e-4)
+    model = RiverDebrisModel.load_from_checkpoint(args.checkpoint_path)
     dataset = RiverDebrisPredDataset(args.img_root, args.mask_root, (2048, 2048), (256, 256))
     dataloader = DataLoader(dataset, 1)
     trainer = L.Trainer()

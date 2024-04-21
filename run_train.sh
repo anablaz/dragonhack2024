@@ -9,6 +9,6 @@
 #SBATCH --time=4:00:00
 
 srun nvidia-smi
-srun python src/train.py \
+srun python src/pred.py \
     --img_root /d/hpc/projects/FRI/zr13891/datasets/floods/images \
     --mask_root /d/hpc/projects/FRI/zr13891/datasets/floods/masks
