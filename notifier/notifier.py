@@ -5,10 +5,8 @@ import discord
 import pandas as pd
 from discord import app_commands
 
-from secret import TOKEN
 
 MY_GUILD = discord.Object(id=1046387245982175262)
-CHANNEL_ID = 1046387247336923176
 
 
 class ObstacleNotifier(discord.Client):
@@ -30,14 +28,14 @@ class ObstacleNotifier(discord.Client):
         Args:
             info (dict): Information about the obstacle:
                 - location (tuple(float, float)): Latitude and longitude of the obstacle
-                - weather (str): Weather conditions
-                - water_flow (float): Water flow conditions
+                - precipitation_ratio (float): Ratio of precipitation in next week to the precipitation in the last month
+                - water_flow_ratio (float): Ratio of water flow in next week to the water flow in the last month
 
         Returns:
             tuple: Tuple of (bool, str) where the first element is True if the notification was successful and False otherwise, and the second element is the response message
         """
         print(f'Notifying about obstacle at {info["location"]} in {channel}')
-        message_to_send = f'Obstacle detected at {info["location"]}! Weather conditions: {info["weather"]}, water flow conditions: {info["water_flow"]}'
+        message_to_send = f'Obstacle detected at {info["location"]}!\nPrecipitation for next week vs. last month: {info["precipitation_ratio"]:.2f}.\nWater flow conditions for next week vs. last month: {info["water_flow_ratio"]:.2f}.'
         if mention_everyone:
             message_to_send = '@everyone ' + message_to_send
 
@@ -46,29 +44,3 @@ class ObstacleNotifier(discord.Client):
         except discord.errors.Forbidden:
             return (False, f'Failed to send message to {channel.name}')
         return (True, f'Message {message} sent to {channel.name}')
-
-
-
-intents = discord.Intents.default()
-
-
-
-client = ObstacleNotifier(intents=intents)
-
-
-
-@client.event
-async def on_ready():
-    print('We have logged in as {0.user}'.format(client))
-    channel = client.get_channel(CHANNEL_ID)
-
-
-
-async def command_error(interaction, error):
-    print(error)
-    if isinstance(error, app_commands.errors.MissingAnyRole):
-        await interaction.response.send_message(f'You are not allowed to use this command!', ephemeral=True)
-    else:
-        await interaction.response.send_message(f'Error: {error}', ephemeral=True)
-
-client.run(TOKEN)
